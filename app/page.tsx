@@ -169,6 +169,36 @@ export default function Home() {
   }
 }
 
+async function archiveTask(taskId: number) {
+  try {
+    setError("");
+
+    const response = await fetch(`/api/tasks/${taskId}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ?? "Failed to archive task"
+      );
+    }
+
+    setTasks((currentTasks) =>
+      currentTasks.filter((task) => task.id !== taskId)
+    );
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Could not archive the task."
+    );
+  }
+}
+
   return (
   <main className="min-h-screen bg-slate-100 px-4 py-10">
     <section className="mx-auto max-w-5xl">
@@ -392,6 +422,14 @@ export default function Home() {
                           Overdue
                         </strong>
                       )}
+
+                      <button
+                        type="button"
+                         onClick={() => void archiveTask(task.id)}
+                         className="ml-auto rounded-md bg-slate-800 px-3 py-2 font-medium text-white hover:bg-slate-700"
+                      >
+                         Archive
+                      </button>
                     </footer>
                   </article>
                 </li>
