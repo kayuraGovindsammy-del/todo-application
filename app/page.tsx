@@ -130,6 +130,45 @@ export default function Home() {
     }
   }
 
+  async function updateTaskStatus(
+  taskId: number,
+  status: Status
+) {
+  try {
+    setError("");
+
+    const response = await fetch(`/api/tasks/${taskId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ?? "Failed to update task status"
+      );
+    }
+
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === taskId ? (data as Task) : task
+      )
+    );
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Could not update the task status."
+    );
+  }
+}
+
   return (
   <main className="min-h-screen bg-slate-100 px-4 py-10">
     <section className="mx-auto max-w-5xl">
@@ -313,9 +352,27 @@ export default function Home() {
                         </p>
                       </section>
 
-                      <strong className="rounded-full bg-slate-200 px-3 py-1 text-sm font-medium text-slate-700">
-                        {task.status}
-                      </strong>
+                      <label className="flex items-center gap-2">
+  <span className="sr-only">
+    Status for {task.title}
+  </span>
+
+  <select
+    value={task.status}
+    onChange={(event) =>
+      void updateTaskStatus(
+        task.id,
+        event.target.value as Status
+      )
+    }
+    className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700"
+    aria-label={`Change status for ${task.title}`}
+  >
+    <option value="Todo">Todo</option>
+    <option value="In-Progress">In-Progress</option>
+    <option value="Complete">Complete</option>
+  </select>
+</label>
                     </header>
 
                     <p className="mt-4 whitespace-pre-wrap text-slate-700">
