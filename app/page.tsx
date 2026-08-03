@@ -50,6 +50,8 @@ function isTaskOverdue(task: Task): boolean {
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [form, setForm] = useState<TaskForm>(emptyForm);
+   const [editingTaskId, setEditingTaskId] =
+    useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -91,46 +93,70 @@ export default function Home() {
   }
 
   async function handleSubmit(
-    event: FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
+  event: FormEvent<HTMLFormElement>
+) {
+  event.preventDefault();
 
-    try {
-      setSubmitting(true);
-      setError("");
+  try {
+    setSubmitting(true);
+    setError("");
 
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+    const url =
+      editingTaskId === null
+        ? "/api/tasks"
+        : `/api/tasks/${editingTaskId}`;
 
-      const data = await response.json();
+    const method =
+      editingTaskId === null ? "POST" : "PATCH";
 
-      if (!response.ok) {
-        throw new Error(data.message ?? "Failed to create task");
-      }
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
 
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ??
+          (editingTaskId === null
+            ? "Failed to create task"
+            : "Failed to update task")
+      );
+    }
+
+    if (editingTaskId === null) {
       setTasks((currentTasks) => [
         data as Task,
         ...currentTasks,
       ]);
-
-      setForm(emptyForm);
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Could not create the task."
+    } else {
+      setTasks((currentTasks) =>
+        currentTasks.map((task) =>
+          task.id === editingTaskId
+            ? (data as Task)
+            : task
+        )
       );
-    } finally {
-      setSubmitting(false);
     }
+
+    setForm(emptyForm);
+    setEditingTaskId(null);
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Could not save the task."
+    );
+  } finally {
+    setSubmitting(false);
   }
+}
 
   async function updateTaskStatus(
   taskId: number,
@@ -201,6 +227,29 @@ async function archiveTask(taskId: number) {
   }
 }
 
+function startEditingTask(task: Task) {
+  setEditingTaskId(task.id);
+
+  setForm({
+    title: task.title,
+    description: task.description,
+    due_date: task.due_date,
+    topic: task.topic,
+    status: task.status,
+  });
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
+
+function cancelEditing() {
+  setEditingTaskId(null);
+  setForm(emptyForm);
+  setError("");
+}
+
   return (
   <main className="min-h-screen bg-slate-100 px-4 py-10">
     <section className="mx-auto max-w-5xl">
@@ -231,7 +280,9 @@ async function archiveTask(taskId: number) {
           id="create-task-heading"
           className="text-2xl font-semibold text-slate-900"
         >
-          Create a task
+          {editingTaskId === null
+          ? "Create a task"
+          : "Edit task"}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-6">
@@ -324,15 +375,32 @@ async function archiveTask(taskId: number) {
               </select>
             </label>
 
-            <footer className="md:col-span-2">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="rounded-md bg-slate-900 px-5 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? "Creating..." : "Create task"}
-              </button>
-            </footer>
+            <footer className="flex gap-3 md:col-span-2">
+  <button
+    type="submit"
+    disabled={submitting}
+    className="rounded-md bg-slate-900 px-5 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    {submitting
+      ? editingTaskId === null
+        ? "Creating..."
+        : "Saving..."
+      : editingTaskId === null
+        ? "Create task"
+        : "Save changes"}
+  </button>
+
+  {editingTaskId !== null && (
+    <button
+      type="button"
+      onClick={cancelEditing}
+      disabled={submitting}
+      className="rounded-md border border-slate-300 px-5 py-2 font-medium text-slate-700 hover:bg-slate-100"
+    >
+      Cancel
+    </button>
+  )}
+</footer>
           </fieldset>
         </form>
 
@@ -436,8 +504,16 @@ async function archiveTask(taskId: number) {
 
                       <button
                         type="button"
+                        onClick={() => startEditingTask(task)}
+                        className="ml-auto rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
+                      >
+                         Edit
+                      </button>
+
+                      <button
+                        type="button"
                          onClick={() => void archiveTask(task.id)}
-                         className="ml-auto rounded-md bg-slate-800 px-3 py-2 font-medium text-white hover:bg-slate-700"
+                         className=" rounded-md bg-slate-800 px-3 py-2 font-medium text-white hover:bg-slate-700"
                       >
                          Archive
                       </button>
