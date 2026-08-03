@@ -2,6 +2,8 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
+import Link from "next/link";
+
 type Status = "Todo" | "In-Progress" | "Complete";
 
 type Task = {
@@ -202,14 +204,23 @@ async function archiveTask(taskId: number) {
   return (
   <main className="min-h-screen bg-slate-100 px-4 py-10">
     <section className="mx-auto max-w-5xl">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900">
-          Todo Application
-        </h1>
+      <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-slate-900">
+            Todo Application
+          </h1>
 
-        <p className="mt-2 text-slate-600">
-          Create and manage your tasks.
-        </p>
+          <p className="mt-2 text-slate-600">
+            Create and manage your tasks.
+          </p>
+        </div>
+
+       <Link
+         href="/archived"
+         className="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
+        >
+         View archived tasks
+       </Link>
       </header>
 
       <section
