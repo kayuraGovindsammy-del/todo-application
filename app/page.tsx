@@ -52,9 +52,13 @@ export default function Home() {
   const [form, setForm] = useState<TaskForm>(emptyForm);
    const [editingTaskId, setEditingTaskId] =
     useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<
+  "topic" | "status" | "due_date"
+>("due_date");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  
 
   const loadTasks = useCallback(async () => {
     try {
@@ -250,6 +254,27 @@ function cancelEditing() {
   setError("");
 }
 
+const sortedTasks = [...tasks].sort((taskA, taskB) => {
+  if (sortBy === "topic") {
+    return taskA.topic.localeCompare(taskB.topic);
+  }
+
+  if (sortBy === "status") {
+    const statusOrder: Record<Status, number> = {
+      Todo: 0,
+      "In-Progress": 1,
+      Complete: 2,
+    };
+
+    return (
+      statusOrder[taskA.status] -
+      statusOrder[taskB.status]
+    );
+  }
+
+  return taskA.due_date.localeCompare(taskB.due_date);
+});
+
   return (
   <main className="min-h-screen bg-slate-100 px-4 py-10">
     <section className="mx-auto max-w-5xl">
@@ -418,12 +443,35 @@ function cancelEditing() {
         aria-labelledby="active-tasks-heading"
         className="mt-8"
       >
-        <h2
-          id="active-tasks-heading"
-          className="text-2xl font-semibold text-slate-900"
-        >
-          Active tasks
-        </h2>
+        <header className="flex flex-wrap items-center justify-between gap-4">
+  <h2
+    id="active-tasks-heading"
+    className="text-2xl font-semibold text-slate-900"
+  >
+    Active tasks
+  </h2>
+
+  <label className="flex items-center gap-2 text-slate-700">
+    <span className="font-medium">Sort by</span>
+
+    <select
+      value={sortBy}
+      onChange={(event) =>
+        setSortBy(
+          event.target.value as
+            | "topic"
+            | "status"
+            | "due_date"
+        )
+      }
+      className="rounded-md border border-slate-300 bg-white px-3 py-2"
+    >
+      <option value="due_date">Due date</option>
+      <option value="topic">Topic</option>
+      <option value="status">Status</option>
+    </select>
+  </label>
+</header>
 
         {loading ? (
           <p
@@ -438,7 +486,7 @@ function cancelEditing() {
           </p>
         ) : (
           <ul className="mt-4 grid list-none gap-4 p-0">
-            {tasks.map((task) => {
+            {sortedTasks.map((task) => {
               const overdue = isTaskOverdue(task);
 
               return (
