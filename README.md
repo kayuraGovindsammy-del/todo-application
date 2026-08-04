@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo Application
 
-## Getting Started
+A local-first todo application built with **Next.js**, **TypeScript**, and **SQLite**.
 
-First, run the development server:
+The application allows a single user to create, edit, organise and archive tasks. All task data is stored locally using SQLite, allowing information to persist after the application is closed and reopened.
+
+---
+
+## Features
+
+- Create tasks
+- Edit existing tasks
+- Archive tasks
+- View archived tasks
+- Sort tasks by:
+  - Due date
+  - Topic
+  - Status
+- Display overdue tasks
+- Persistent SQLite database
+- Automated unit tests
+
+---
+
+## Requirements
+
+- Node.js **20** or later
+- npm (included with Node.js)
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/<kayuraGovindsammy-del>/todo-application.git
+```
+
+Move into the project folder:
+
+```bash
+cd todo-application
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+---
+
+## Running the application
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open browser and navigate to:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Running the tests
 
-To learn more about Next.js, take a look at the following resources:
+Execute all automated tests:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+todo-application
+│
+├── app/
+│   ├── api/
+│   ├── archived/
+│   └── page.tsx
+│
+├── lib/
+│   ├── db.ts
+│   ├── schema.ts
+│   └── tasks.ts
+│
+├── tests/
+│
+├── public/
+│
+├── package.json
+└── README.md
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Task Fields
+
+Each task stores:
+
+- Title
+- Description
+- Topic
+- Due Date
+- Status
+- Archive Status
+- Creation Date
+
+The available task statuses are:
+
+- Todo
+- In-Progress
+- Complete
+
+Tasks are never deleted. When archived, they are removed from the active task list but remain available through the Archived Tasks page.
+
+---
+
+## Persistence
+
+Task data is stored locally in a SQLite database (`todo.db`).
+
+The database is automatically created the first time the application runs.
+
+---
+
+## Technologies Used
+
+- Next.js
+- React
+- TypeScript
+- SQLite
+- better-sqlite3
+- Tailwind CSS
+- Vitest
+
+---
+
+## Author
+
+Kayura Govindsammy
+
+COMS3011A Lab 1
