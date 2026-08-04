@@ -13,6 +13,7 @@ AI assistance was used throughout the development of this project to:
 - Generate initial code examples.
 - Assist in writing automated tests.
 - Assist in preparing project documentation.
+- Assist in editing code. 
 
 ## Author contribution
 
@@ -23,3 +24,4 @@ The application was built incrementally. AI suggestions were used as guidance an
 ## Transcript
 
 The following link provided consists of the full conversation between Chatgpt and the author: 
+https://chatgpt.com/share/6a720012-c284-83ea-95b6-459f15aa3c5c 

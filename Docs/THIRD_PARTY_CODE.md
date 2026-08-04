@@ -18,8 +18,7 @@ This project makes use of the following third-party libraries and packages.
 
 ### Next.js
 
-Next.js provides the project structure, page routing, API routes and development server. It allows both the frontend and backend logic to exist within the same project.
-
+Next.js provides the project structure, page routing, API routes and development server.
 ### React
 
 React manages the user interface through reusable components and state updates. It simplifies rendering and updating the task list whenever changes occur.
@@ -30,7 +29,7 @@ TypeScript improves code quality by detecting type errors during development and
 
 ### Tailwind CSS
 
-Tailwind CSS was chosen because it provides a fast way to build a clean and responsive user interface without writing large CSS files.
+Tailwind CSS provides a fast way to build a clean and responsive user interface without writing large CSS files.
 
 ### better-sqlite3
 

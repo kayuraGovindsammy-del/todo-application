@@ -2,12 +2,11 @@
 
 ## Overview
 
-The application uses a single SQLite database called `todo.db`.
+The application uses a single SQLite database named `todo.db`.
 
-The database stores all task information in one table named `tasks`.
+All task-related information is stored in one table called `tasks`. Because the application is designed as a local-first, single-user system, one table is sufficient and no additional relationships or user tables are required.
 
-Since this is a local-first application for a single user, one table is sufficient and no additional relationships are required.
-
+SQLite is suitable for this application because it is lightweight, requires no separate database server, and stores all data in a single local file.
 ---
 
 # Table: tasks
@@ -29,8 +28,9 @@ Since this is a local-first application for a single user, one table is sufficie
 
 The `id` column is the primary key.
 
-SQLite automatically assigns each task a unique identifier using `AUTOINCREMENT`.
+It uses SQLite's `AUTOINCREMENT` feature to generate a unique numeric identifier whenever a new task is created.
 
+This identifier is used when editing, archiving, or retrieving a specific task
 ---
 
 ## Relationships
@@ -65,6 +65,7 @@ Each task has one of three possible statuses:
 - Complete
 
 These fixed values. 
+The database uses a CHECK constraint to prevent invalid status values from being stored.
 
 ---
 
@@ -82,6 +83,20 @@ A task is considered overdue when:
 This avoids storing redundant data and ensures the overdue status is always accurate.
 
 ---
+
+
+## Data integrity 
+
+The database schema includes several constraints to protect the stored data:
+
+title, description, due_date, topic, and status cannot be NULL.
+status must contain one of the supported values.
+archived must contain either 0 or 1.
+archived defaults to 0, meaning new tasks are active.
+status defaults to Todo.
+created_at is automatically set when a task is created.
+
+These constraints help prevent invalid or incomplete records from being inserted into the database.
 
 ## Database Schema
 
